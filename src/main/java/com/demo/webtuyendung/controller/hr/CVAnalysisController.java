@@ -25,7 +25,6 @@ public class CVAnalysisController {
     private final FileProcessingService fileProcessingService;
     private final GrokAIService grokAIService;
 
-    // ========== THAY THẾ METHOD NÀY ==========
     @PostMapping("/analyze/{candidateId}")
     public ResponseEntity<?> analyzeOne(
         @PathVariable Integer candidateId,
@@ -35,7 +34,6 @@ public class CVAnalysisController {
         log.info("Candidate ID: {}", candidateId);
         log.info("Criteria: {}", criteria);
 
-        // Nếu không có criteria, dùng mặc định
         if (criteria.isEmpty()) {
             criteria = "Java, Spring Boot, REST API, 2+ năm, tiếng Anh giao tiếp";
             log.info("Using default criteria: {}", criteria);

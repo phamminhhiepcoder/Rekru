@@ -72,7 +72,6 @@ public class GrokAIService {
             Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
             String content = (String) message.get("content");
 
-            // Parse JSON result
             CVAnalysisResult result = objectMapper.readValue(content, CVAnalysisResult.class);
             
             log.info("CV analyzed successfully - score: {}", result.getScore());
