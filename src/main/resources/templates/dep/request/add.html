@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="layout" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Dashboard</title>
+</head>
+<body>
+<th:block th:replace="layout/dep-layout :: layout">
+    <th:block th:fragment="pageContent">
+        <div class="pd-ltr-20 xs-pd-20-10">
+            <div class="min-height-200px">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="title">
+                                <h4>Quản lý yêu cầu tuyển dụng</h4>
+                            </div>
+                            <nav aria-label="breadcrumb" role="navigation">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a th:href="@{/dep/dashboard}">Trang quản lý</a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        Quản lý yêu cầu tuyển dụng
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Form -->
+                <div class="pd-20 card-box mb-30">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h4 class="text-blue h4">Tạo yêu cầu tuyển dụng</h4>
+                        </div>
+                    </div>
+                    <form th:action="@{/dep/request/save}" method="post" th:object="${requestDto}" class="form"
+                          enctype="multipart/form-data"
+                          accept-charset="UTF-8">
+
+                        <div th:if="${error}" class="text-danger">
+                            <p th:text="${error}"></p>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="department">Phòng ban</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="text" id="department" th:value="${department}" disabled
+                                       class="form-control"/>
+                            </div>
+
+                            <label class="col-sm-12 col-md-2 col-form-label" for="requesterName">Người yêu cầu</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="text" id="requesterName" th:value="${requesterName}" disabled
+                                       class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="quantity">Số lượng tuyển dụng</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="number" id="quantity" th:field="*{quantity}" class="form-control"
+                                       placeholder="Nhập Số lượng tuyển dụng"/>
+                                <div th:if="${#fields.hasErrors('quantity')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('quantity')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <label class="col-sm-12 col-md-2 col-form-label" for="position">Vị trí </label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="text" id="position" th:field="*{position}" class="form-control"
+                                       placeholder="Nhập vị trí tuyển dụng"/>
+                                <div th:if="${#fields.hasErrors('position')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('position')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="target">Mục tiêu</label>
+                            <div class="col-sm-12 col-md-4">
+                                <select id="target" th:field="*{target}" class="custom-select col-12">
+                                    <option value="within-budget">Trong ngân sách</option>
+                                    <option value="out-of-budget">Ngoài ngân sách</option>
+                                </select>
+                                <div th:if="${#fields.hasErrors('reason')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('reason')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <label class="col-sm-12 col-md-2 col-form-label" for="location">Địa điểm làm việc </label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="text" id="location" th:field="*{location}" class="form-control"
+                                       placeholder="Nhập địa điểm"/>
+                                <div th:if="${#fields.hasErrors('location')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('location')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="startDate">Ngày bắt đầu</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="date" id="startDate" th:field="*{startDate}" class="form-control"/>
+                                <div th:if="${#fields.hasErrors('startDate')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('startDate')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <label class="col-sm-12 col-md-2 col-form-label" for="endDate">Ngày hoàn thành</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="date" id="endDate" th:field="*{endDate}" class="form-control"/>
+                                <div th:if="${#fields.hasErrors('endDate')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('endDate')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group row">
+
+                            <label class="col-sm-12 col-md-2 col-form-label" for="months">Thời gian làm việc
+                                (tháng)</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="number" id="months" th:field="*{months}" class="form-control"/>
+                                <div th:if="${#fields.hasErrors('months')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('months')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <label class="col-sm-12 col-md-2 col-form-label" for="reason">Loại tuyển dụng</label>
+                            <div class="col-sm-12 col-md-4">
+                                <select id="reason" th:field="*{reason}" class="custom-select col-12">
+                                    <option value="no-deadline">Không thời hạn</option>
+                                    <option value="deadline">Có thời hạn</option>
+                                </select>
+                                <div th:if="${#fields.hasErrors('reason')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('reason')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="requestType">Loại yêu cầu</label>
+                            <div class="col-sm-12 col-md-10">
+                                <select id="requestType" th:field="*{requestType}" class="custom-select col-12">
+                                    <option value="replace">Thay thế</option>
+                                    <option value="new">Tuyển mới</option>
+                                </select>
+                                <div th:if="${#fields.hasErrors('requestType')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('requestType')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="jobDescription">Mô tả công
+                                việc</label>
+                            <div class="col-sm-12 col-md-10">
+                                <textarea id="jobDescription" th:field="*{jobDescription}" class="form-control"
+                                          placeholder="Nhập mô tả"></textarea>
+                                <div th:if="${#fields.hasErrors('jobDescription')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('jobDescription')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="standard">Tiêu chuẩn</label>
+                            <div class="col-sm-12 col-md-10">
+                                <textarea id="standard" th:field="*{standard}" class="form-control"
+                                          placeholder="Nhập tiêu chuẩn"></textarea>
+                                <div th:if="${#fields.hasErrors('standard')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('standard')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="explanation">Giải trình</label>
+                            <div class="col-sm-12 col-md-10">
+                                <textarea id="explanation" th:field="*{explanation}" class="form-control"
+                                          placeholder="Nhập tiêu chuẩn"></textarea>
+                                <div th:if="${#fields.hasErrors('explanation')}" class="text-danger">
+                                    <ul>
+                                        <li th:each="err : ${#fields.errors('explanation')}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="explanation">Giấy xác nhận</label>
+                            <div class="col-sm-12 col-md-10">
+                                <input type="file" id="file" name="file" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-12 text-right">
+                                <button type="submit" class="btn btn-primary">Lưu yêu cầu tuyển dụng</button>
+                                <a th:href="@{/dep/request}" class="btn btn-secondary">Hủy</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</th:block>
+</body>
+<script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#jobDescription'))
+        .catch(error => console.error(error));
+    ClassicEditor
+        .create(document.querySelector('#standard'))
+        .catch(error => console.error(error));
+    ClassicEditor
+        .create(document.querySelector('#explanation'))
+        .catch(error => console.error(error));
+</script>
+
+</html>

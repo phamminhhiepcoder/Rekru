@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <!-- Basic Page Info -->
+    <meta charset="utf-8" />
+    <title>HRM</title>
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/assets_admin/vendors/images/apple-touch-icon.png}" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/assets_admin/vendors/images/favicon-32x32.png}" />
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/assets_admin/vendors/images/favicon-16x16.png}" />
+
+    <!-- Mobile Specific Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets_admin/vendors/styles/core.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/assets_admin/vendors/styles/icon-font.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/assets_admin/vendors/styles/style.css}" />
+
+</head>
+
+<body class="login-page">
+    <div class="login-header box-shadow">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="brand-logo">
+                <a href="login.html">
+                    <img th:src="@{/assets_admin/vendors/images/deskapp-logo.svg}" alt="" />
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="login-wrap d-flex align-items-center flex-wrap justify-content-center">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 col-lg-7">
+                    <img th:src="@{/assets_admin/vendors/images/login-page-img.png}" alt="" />
+                </div>
+                <div class="col-md-6 col-lg-5">
+                    <div class="login-box bg-white box-shadow border-radius-10">
+                        <div class="login-title">
+                            <h2 class="text-center text-primary">Reset mật khẩu của bạn</h2>
+                        </div>
+                        <form th:action="@{/change-pass}" method="post">
+                            <div id="passwordError" class="text-danger"></div>
+
+                            <div class="input-group custom">
+                                <input type="password" name="password" class="form-control form-control-lg"
+                                    placeholder="Mật khẩu" id="password" />
+                                <div class="input-group-append custom">
+                                    <span class="input-group-text" id="togglePassword"><i
+                                            class="icon-copy dw dw-user1"></i></span>
+                                </div>
+                            </div>
+                            <div id="rePasswordError" class="text-danger"></div>
+
+                            <div class="input-group custom">
+                                <input type="password" name="rePassword" class="form-control form-control-lg"
+                                    placeholder="Mật khẩu nhập lại" id="rePassword" />
+                                <div class="input-group-append custom">
+                                    <span class="input-group-text" id="toggleRePassword"><i
+                                            class="dw dw-padlock1"></i></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="input-group mb-0">
+                                        <button class="btn btn-primary btn-lg btn-block" type="submit">Xác nhận</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- welcome modal end -->
+    <!-- js -->
+    <script th:src="@{/assets_admin/vendors/scripts/core.js}"></script>
+    <script th:src="@{/assets_admin/vendors/scripts/script.min.js}"></script>
+    <script th:src="@{/assets_admin/vendors/scripts/process.js}"></script>
+    <script th:src="@{/assets_admin/vendors/scripts/layout-settings.js}"></script>
+
+
+    <script>
+        // Lấy các phần tử
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        const toggleRePassword = document.getElementById('toggleRePassword');
+        const rePassword = document.getElementById('rePassword');
+
+        togglePassword.addEventListener('click', function () {
+            if (password.type === 'password') {
+                password.type = 'text';
+            } else {
+                password.type = 'password';
+            }
+        });
+
+        toggleRePassword.addEventListener('click', function () {
+            if (rePassword.type === 'password') {
+                rePassword.type = 'text';
+            } else {
+                rePassword.type = 'password';
+            }
+        });
+    </script>
+
+
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const passwordError = document.getElementById('passwordError');
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7,}$/;
+
+        passwordInput.addEventListener('input', function () {
+            const password = passwordInput.value;
+
+            validatePassword(password);
+
+        });
+
+        passwordInput.addEventListener('blur', function () {
+            const password = passwordInput.value.trim();
+            if (password === '') {
+                passwordError.textContent = 'Mật khẩu không được để trống.';
+            }
+        });
+
+        function validatePassword(password) {
+            if (password === '') {
+                passwordError.textContent = '';
+                return false;
+            }
+
+            if (!passwordRegex.test(password)) {
+                if (password.length < 7) {
+                    passwordError.textContent = 'Mật khẩu phải có ít nhất 7 ký tự.';
+                } else if (!/(?=.*[a-z])/.test(password)) {
+                    passwordError.textContent = 'Mật khẩu phải có ít nhất 1 chữ thường.';
+                } else if (!/(?=.*[A-Z])/.test(password)) {
+                    passwordError.textContent = 'Mật khẩu phải có ít nhất 1 chữ hoa.';
+                } else if (!/(?=.*\d)/.test(password)) {
+                    passwordError.textContent = 'Mật khẩu phải có ít nhất 1 số.';
+                } else if (!/(?=.*[@$!%*?&])/.test(password)) {
+                    passwordError.textContent = 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt (@$!%*?&).';
+                } else {
+                    passwordError.textContent = 'Mật khẩu chỉ được chứa chữ cái, số và ký tự đặc biệt @$!%*?&.';
+                }
+                return false;
+            } else {
+                passwordError.textContent = '';
+                return true;
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            let score = 0;
+            let strength = {
+                score: 0,
+                text: '',
+                className: ''
+            };
+
+            if (!password) {
+                return strength;
+            }
+
+            // Award points for different criteria
+            if (password.length >= 7) score += 25;
+            if (password.match(/[a-z]/)) score += 10;
+            if (password.match(/[A-Z]/)) score += 15;
+            if (password.match(/[0-9]/)) score += 15;
+            if (password.match(/[@$!%*?&]/)) score += 25;
+            // A little bonus for length
+            if (password.length > 12) score += 10;
+
+            strength.score = Math.min(score, 100);
+
+            if (strength.score >= 75) {
+                strength.text = 'Mạnh';
+                strength.className = 'strength-strong';
+            } else if (strength.score >= 50) {
+                strength.text = 'Trung bình';
+                strength.className = 'strength-medium';
+            } else if (strength.score > 0) {
+                strength.text = 'Yếu';
+                strength.className = 'strength-weak';
+            }
+
+            return strength;
+        }
+    </script>
+
+</body>
+
+</html>

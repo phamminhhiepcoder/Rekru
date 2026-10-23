@@ -1,0 +1,30 @@
+<th:block th:fragment="left" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="left-side-bar">
+        <div class="brand-logo">
+            <div class="close-sidebar" data-toggle="left-sidebar-close">
+                <i class="ion-close-round"></i>
+            </div>
+        </div>
+        <div class="menu-block customscroll">
+            <div class="sidebar-menu">
+                <ul id="accordion-menu">
+                    <li>
+                        <a th:href="@{/dep/dashboard}" class="dropdown-toggle no-arrow">
+                            <span class="micon bi bi-house-door"></span><span class="mtext">Trang chủ</span>
+                        </a>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="javascript:;" class="dropdown-toggle">
+                            <span class="micon bi bi-calendar-check"></span><span class="mtext">Quản lý yêu cầu</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/dep/request}">Danh sách</a></li>
+                            <li><a th:href="@{/dep/request/add}">Thêm</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</th:block>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="layout" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Dashboard</title>
+    <style>
+        .status-dot {
+        padding-left: 24px;
+        position: relative;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+
+    .status-dot::before {
+        content: "";
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        position: absolute;
+        left: 0;
+        top: 3px;
+    }
+
+    .status-processing::before {
+        background-color: #007bff; /* xanh dương */
+    }
+
+    .status-waiting::before {
+        background-color: #ffc107; /* vàng */
+    }
+
+    .status-canceled::before {
+        background-color: #dc3545; /* đỏ */
+    }
+
+    .status-completed::before {
+        background-color: #28a745; /* xanh lá */
+    }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout/dep-layout :: layout">
+    <th:block th:fragment="pageContent">
+        <div class="pd-ltr-20 xs-pd-20-10">
+            <div class="min-height-200px">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="title">
+                                <h4>Quản lý yêu cầu tuyển dụng</h4>
+                            </div>
+                            <nav aria-label="breadcrumb" role="navigation">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a th:href="@{/dep/dashboard}">Trang quản lý</a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        Quản lý yêu cầu tuyển dụng
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav nav-tabs customtab mb-4" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#info" role="tab">Thông tin chi tiết</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#candidates" role="tab">Danh sách ứng viên</a>
+                    </li>
+                </ul>
+
+                <!-- Tabs content -->
+                <div class="tab-content">
+                    <!-- Tab 1: Thông tin chi tiết -->
+                    <div class="tab-pane fade show active" id="info" role="tabpanel">
+
+                        <div class="pd-20 card-box mb-30" th:object="${requestDto}">
+                            <h4 class="text-blue h4">THÔNG TIN CHI TIẾT</h4>
+
+                            <!-- Row 1 -->
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <label><strong>Mã yêu cầu</strong></label>
+                                    <p class="form-control-plaintext" th:text="*{'YC'+ id}">YC1234567</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label><strong>Mục tiêu</strong></label>
+                                    <p class="form-control-plaintext"
+                                       th:text="*{target == 'within-budget' ? 'Trong ngân sách' : 'Ngoài ngân sách'}">
+                                        Ngoài ngân sách</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label><strong>Bộ phận</strong></label>
+                                    <p class="form-control-plaintext" th:text="*{department}">T&A</p>
+                                </div>
+                            </div>
+
+                            <!-- Row 2 -->
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <label><strong>Vị trí</strong></label>
+                                    <p class="form-control-plaintext" th:text="*{position}">Junior BA</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label><strong>Người phụ trách</strong></label>
+                                    <p class="form-control-plaintext" th:text="*{requesterName}">Nguyen Van A</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label><strong>Địa điểm</strong></label>
+                                    <p class="form-control-plaintext" th:text="*{location}">12 Duy Tân</p>
+                                </div>
+                            </div>
+
+                            <!-- Row 3 -->
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <label><strong>Số lượng tuyển dụng</strong></label>
+                                    <p class="form-control-plaintext" th:text="*{quantity}">2</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label><strong>Loại tuyển dụng</strong></label>
+                                    <p class="form-control-plaintext"
+                                       th:text="*{reason == 'no-deadline' ? 'Không thời hạn' : 'Có thời hạn'}">Có thời
+                                        hạn</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label><strong>Thời gian làm việc</strong></label>
+                                    <p class="form-control-plaintext" th:text="*{months + ' tháng'}">12 tháng</p>
+                                </div>
+                            </div>
+
+                            <!-- Row 4 -->
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <label><strong>Loại yêu cầu</strong></label>
+                                    <p class="form-control-plaintext"
+                                       th:text="*{requestType == 'new' ? 'Tuyển mới' : 'Thay thế'}">Thay thế</p>
+                                </div>
+                                <div class="col-md-8">
+                                    <label><strong>Nhân viên thay thế</strong></label>
+                                    <p class="form-control-plaintext">Nguyen Van A, Nguyen Van B</p>
+                                </div>
+                            </div>
+
+                            <!-- Row 5 -->
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <label><strong>Ngày bắt đầu tuyển dụng</strong></label>
+                                    <p class="form-control-plaintext" th:text="*{startDate}">30/08/2025</p>
+                                </div>
+                                <div class="col-md-8">
+                                    <label><strong>Ngày hoàn thành tuyển dụng</strong></label>
+                                    <p class="form-control-plaintext" th:text="*{endDate}">30/11/2025</p>
+                                </div>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label><strong>Trạng thái</strong></label><br/>
+                                    <span class="status-dot"
+                                          th:classappend="| status-${requestDto.requestStatus?.toLowerCase()}|"
+                                          th:text="${requestDto.requestStatus}">Waiting</span>
+                                </div>
+                            </div>
+
+                            <!-- Explanation -->
+                            <div class="form-group">
+                                <label><strong>Giải trình</strong></label>
+                                <div class="form-control-plaintext" th:utext="*{explanation}">Lorem Ipsum...</div>
+                            </div>
+
+                            <!-- Job Description -->
+                            <div class="form-group">
+                                <label><strong>Mô tả công việc</strong></label>
+                                <div class="form-control-plaintext" th:utext="*{jobDescription}">Lorem Ipsum...</div>
+                            </div>
+
+                            <!-- Standard -->
+                            <div class="form-group">
+                                <label><strong>Tiêu chuẩn</strong></label>
+                                <div class="form-control-plaintext" th:utext="*{standard}">Lorem Ipsum...</div>
+                            </div>
+
+                            <!-- Attachment -->
+                            <div class="form-group">
+                                <label><strong>Giấy xác nhận</strong></label>
+                                <div>
+                                    <a th:href="@{${requestDto.confirmation}}" target="_blank"
+                                       class="btn btn-info">Xem</a>
+                                </div>
+                            </div>
+
+                            <!-- Back Button -->
+                            <div class="form-group row">
+                                <div class="col-sm-12 text-right">
+                                    <a th:href="@{/dep/request}" class="btn btn-secondary">Quay lại</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="candidates" role="tabpanel">
+                        <div class="pd-20 card-box">
+                            <h5 class="text-primary">Danh sách ứng viên</h5>
+                            <div class="pb-20">
+                                <!-- Thanh công cụ với ô tìm kiếm, combo box và các nút -->
+                                <div class="d-flex justify-content-end align-items-center mb-3">
+                                    <div class="d-flex">
+                                        <input type="text" class="form-control" id="searchInput"
+                                               placeholder="Tìm kiếm theo mã, tên..." style="width: 250px;">
+
+                                        <select class="form-control ml-3" id="roundSelect">
+                                            <option value="">Chọn vòng</option>
+                                            <option value="Sàng lọc hồ sơ">Sàng lọc hồ sơ</option>
+                                            <option value="Phỏng vấn qua điện thoại">Phỏng vấn qua điện thoại
+                                            </option>
+                                            <option value="Đánh giá tuyển dụng">Đánh giá tuyển dụng</option>
+                                            <option value="Phỏng vấn vòng 1">Phỏng vấn vòng 1</option>
+                                            <option value="Phỏng vấn vòng 2">Phỏng vấn vòng 2</option>
+                                            <option value="Phỏng vấn vòng 3">Phỏng vấn vòng 3</option>
+                                            <option value="Đề nghị tuyển dụng">Đề nghị tuyển dụng</option>
+                                            <option value="Hội nhập công ty">Hội nhập công ty</option>
+                                        </select>
+
+
+                                        <select class="form-control ml-3" id="statusSelect">
+                                            <option value="">Chọn trạng thái</option>
+                                            <option value="Đang đánh giá">Đang đánh giá</option>
+                                            <option value="Phù hợp">Phù hợp</option>
+                                            <option value="Không phù hợp">Không phù hợp</option>
+                                            <option value="Bị từ chối">Bị từ chối</option>
+                                            <option value="Từ chối hoặc rút hồ sơ">Từ chối hoặc rút hồ sơ</option>
+                                            <option value="Phù hợp với vị trí khác">Phù hợp với vị trí khác</option>
+                                            <option value="Đã chọn">Đã chọn</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <form id="deleteForm" method="POST">
+                                    <table class="data-table table stripe hover nowrap" id="candidateTable">
+                                        <thead>
+                                        <tr>
+                                            <th class="table-plus datatable-nosort">Mã ứng viên</th>
+                                            <th>Tên ứng viên</th>
+                                            <th>Điện thoại</th>
+                                            <th>Email</th>
+                                            <th>CV</th>
+                                            <th>Nguồn ứng tuyển</th>
+                                            <th>Vòng</th>
+                                            <th>Trạng thái</th>
+                                            <th>Đánh giá CV</th>
+                                            <th>Lịch phỏng vấn gần nhất</th>
+                                            <th>Cập nhật lần cuối</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="c : ${candidates}" class="candidate-row">
+                                            <td class="table-plus" th:text="${'UV' + c.id}"
+                                                th:data-id="${c.id}" onclick="openModal(this)"></td>
+                                            <td th:text="${c.fullName}"></td>
+                                            <td th:text="${c.phoneNumber}"></td>
+                                            <td th:text="${c.email}"></td>
+                                            <td>
+                                                <a th:href="@{${c.cvFile}}" target="_blank"
+                                                   class="btn btn-info">Xem</a>
+                                            </td>
+                                            <td th:text="${c.source}"></td>
+                                            <td>
+                                                <select class="form-control" id="roundChangeSelect"
+                                                        th:data-id="${c.id}">
+                                                    <option value="PRESCREEN"
+                                                            th:selected="${c.round == 'PRESCREEN'}">Sàng lọc hồ sơ
+                                                    </option>
+                                                    <option value="PHONE_INTERVIEW"
+                                                            th:selected="${c.round == 'PHONE_INTERVIEW'}">Phỏng vấn
+                                                        qua điện thoại
+                                                    </option>
+                                                    <option value="HIRING_REVIEW"
+                                                            th:selected="${c.round == 'HIRING_REVIEW'}">Đánh giá
+                                                        tuyển dụng
+                                                    </option>
+                                                    <option value="ASSESSMENT_TEST"
+                                                            th:selected="${c.round == 'ASSESSMENT_TEST'}">Bài kiểm
+                                                        tra đánh giá
+                                                    </option>
+                                                    <option value="FIRST_INTERVIEW"
+                                                            th:selected="${c.round == 'FIRST_INTERVIEW'}">Phỏng vấn
+                                                        vòng 1
+                                                    </option>
+                                                    <option value="SECOND_INTERVIEW"
+                                                            th:selected="${c.round == 'SECOND_INTERVIEW'}">Phỏng vấn
+                                                        vòng 2
+                                                    </option>
+                                                    <option value="THIRD_INTERVIEW"
+                                                            th:selected="${c.round == 'THIRD_INTERVIEW'}">Phỏng vấn
+                                                        vòng 3
+                                                    </option>
+                                                    <option value="JOB_OFFER"
+                                                            th:selected="${c.round == 'JOB_OFFER'}">Đề nghị tuyển
+                                                        dụng
+                                                    </option>
+                                                    <option value="ONBOARDING"
+                                                            th:selected="${c.round == 'ONBOARDING'}">Hội nhập công
+                                                        ty
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-control" id="candidateStatusSelect"
+                                                        th:data-id="${c.id}">
+                                                    <option value="IN_REVIEW"
+                                                            th:selected="${c.candidateStatus == 'IN_REVIEW'}">Đang
+                                                        đánh giá
+                                                    </option>
+                                                    <option value="FIT" th:selected="${c.candidateStatus == 'FIT'}">
+                                                        Phù hợp
+                                                    </option>
+                                                    <option value="NOT_FIT"
+                                                            th:selected="${c.candidateStatus == 'NOT_FIT'}">Không
+                                                        phù hợp
+                                                    </option>
+                                                    <option value="REJECTED"
+                                                            th:selected="${c.candidateStatus == 'REJECTED'}">Bị từ
+                                                        chối
+                                                    </option>
+                                                    <option value="DECLINED"
+                                                            th:selected="${c.candidateStatus == 'DECLINED'}">Từ chối
+                                                        hoặc rút hồ sơ
+                                                    </option>
+                                                    <option value="SUITABLE_FOR_OTHER_POSITION"
+                                                            th:selected="${c.candidateStatus == 'SUITABLE_FOR_OTHER_POSITION'}">
+                                                        Phù hợp với vị trí khác
+                                                    </option>
+                                                    <option value="SELECTED"
+                                                            th:selected="${c.candidateStatus == 'SELECTED'}">Đã chọn
+                                                    </option>
+                                                </select>
+                                            </td>
+
+                                            <td th:text="${c.cVEvaluationStatus}"></td>
+
+                                            <td>N/A</td>
+                                            <td th:text="${#temporals.format(c.updatedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <button type="button" class="btn btn-danger" id="deleteSelectedBtn">Xoá đã
+                                        chọn
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </th:block>
+</th:block>
+
+<div class="modal fade" id="detailSendModal" tabindex="-1" role="dialog" aria-labelledby="detailSendModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailSendModalLabel">CHI TIẾT HỒ SƠ ỨNG VIÊN</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="pd-20 card-box mb-30">
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label><strong>Mã ứng viên</strong></label>
+                            <p class="form-control-plaintext" id="detailSendId">YC1234567</p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label><strong>Tên ứng viên</strong></label>
+                            <p class="form-control-plaintext" id="detailSendFullname">YC1234567</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label><strong>Số điện thoại</strong></label>
+                            <p class="form-control-plaintext" id="detailSendPhoneNumber">YC1234567</p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label><strong>Email</strong></label>
+                            <p class="form-control-plaintext" id="detailSendEmail">YC1234567</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label><strong>CV</strong></label>
+                            <p class="form-control-plaintext" id="detailSendCvFile">YC1234567</p>
+
+                        </div>
+
+                        <div class="col-md-6">
+                            <label><strong>Nguồn ứng tuyển</strong></label>
+                            <p class="form-control-plaintext" id="detailSendSource">YC1234567</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label><strong>Người giới thiệu</strong></label>
+                            <p class="form-control-plaintext" id="detailSendIntroducer">YC1234567</p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label><strong>Vòng</strong></label>
+                            <p class="form-control-plaintext" id="detailSendRound">YC1234567</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label><strong>Lịch phỏng vấn gần nhất</strong></label>
+                            <p class="form-control-plaintext" id="detailSendInterviewSchedule">YC1234567</p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label><strong>Cập nhật lần cuối</strong></label>
+                            <p class="form-control-plaintext" id="detailSendUpdatedAt">YC1234567</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label><strong>Trạng thái</strong></label>
+                            <p class="form-control-plaintext" id="detailSendStatus">YC1234567</p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label><strong>Đánh giá CV</strong></label>
+                            <p class="form-control-plaintext" id="detailSendCvEvaluation">YC1234567</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pd-20 card-box mb-30">
+                    <h4 class="text-blue h4 mb-3">Bình luận về ứng viên</h4>
+                    <div id="commentsSection">
+
+                    </div>
+
+                    <form th:action="@{/dep/post/comment}" method="post">
+                        <input type="hidden" id="candidateIdSendComment" name="candidateIdSendComment">
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <label class="col-sm-12 col-md-3 col-form-label" for="content">Nội dung</label>
+                                <div class="col-sm-12 col-md-9">
+                                    <textarea type="text" id="content" name="content" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger" id="sendComment">Gửi</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+    function openModal(tdElement) {
+        const candidateId = tdElement.getAttribute('data-id');
+
+        fetch(`/api/candidate/${candidateId}`, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("detailSendId").textContent = data.id;
+            document.getElementById("detailSendFullname").textContent = data.fullName;
+            document.getElementById("detailSendPhoneNumber").textContent = data.phoneNumber;
+            document.getElementById("detailSendEmail").textContent = data.email;
+            document.getElementById("detailSendCvFile").innerHTML = `<a href="${data.cvFile}" target="_blank">CV ứng viên</a>`;
+            document.getElementById("detailSendSource").textContent = data.source;
+            document.getElementById("detailSendIntroducer").textContent = data.introducer;
+            document.getElementById("detailSendRound").textContent = data.round;
+            document.getElementById("detailSendInterviewSchedule").textContent = data.interviewSchedule || "Chưa có lịch phỏng vấn";
+            document.getElementById("detailSendUpdatedAt").textContent = data.updatedAt;
+            document.getElementById("detailSendStatus").textContent = data.candidateStatus;
+            document.getElementById("detailSendCvEvaluation").textContent = data.cVEvaluationStatus;
+
+            let commentsHtml = "";
+            data.commentDtos.forEach(comment => {
+                commentsHtml += `
+                    <div class="comment">
+                        <p><strong>${comment.reviewerName}:</strong> ${comment.content}</p>
+                        <p><small>Ngày tạo: ${comment.createdAt}</small></p>
+                    </div>
+                `;
+            });
+
+            document.getElementById("commentsSection").innerHTML = commentsHtml;
+            document.getElementById("candidateIdSendComment").value = data.id;
+
+            $('#detailSendModal').modal('show');
+        })
+        .catch(error => {
+            console.error("Error fetching candidate details:", error);
+        });
+    }
+
+    document.getElementById('sendComment').addEventListener('click', function(event) {
+        event.preventDefault();
+
+        const candidateId = document.getElementById('candidateIdSendComment').value;
+        const content = document.getElementById('content').value;
+
+        if (!content) {
+            alert('Vui lòng nhập nội dung bình luận!');
+            return;
+        }
+
+        const commentData = {
+            candidateIdSendComment: candidateId,
+            content: content
+        };
+
+        fetch('/dep/request/comment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(commentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const newCommentHtml = `
+                    <div class="comment">
+                        <p><strong>${data.reviewerName}:</strong> ${data.content}</p>
+                        <p><small>Ngày tạo: ${data.createdAt}</small></p>
+                    </div>
+                `;
+                document.getElementById('commentsSection').innerHTML += newCommentHtml;
+
+                document.getElementById('content').value = '';
+
+                alert('Bình luận đã được gửi thành công!');
+            } else {
+                alert('Có lỗi xảy ra khi gửi bình luận. Vui lòng thử lại!');
+            }
+        })
+        .catch(error => {
+            console.error("Error posting comment:", error);
+            alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+        });
+    });
+</script>
+
+</body>
+</html>

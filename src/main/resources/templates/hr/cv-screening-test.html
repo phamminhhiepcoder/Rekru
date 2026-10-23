@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test CV Screening - Grok AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .upload-zone {
+            border: 3px dashed #667eea;
+            border-radius: 1rem;
+            padding: 3rem;
+            text-align: center;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-zone:hover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+        }
+
+        .upload-zone i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .upload-zone p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .files-list {
+            margin-top: 1.5rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-icon {
+            font-size: 2rem;
+            color: #dc3545;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .results-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .result-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .score-excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .score-good {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .score-fair {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .score-poor {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .candidate-info h3 {
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .candidate-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .summary-box {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .strengths, .weaknesses {
+            margin-top: 1rem;
+        }
+
+        .strengths h4, .weaknesses h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .strengths h4 {
+            color: #28a745;
+        }
+
+        .weaknesses h4 {
+            color: #ffc107;
+        }
+
+        .strengths ul, .weaknesses ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .strengths li::before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .weaknesses li::before {
+            content: "⚠ ";
+            color: #ffc107;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #667eea;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-brain"></i> Test CV Screening - Grok AI</h1>
+        <p>Upload CV và xem kết quả phân tích tức thì (Không lưu DB)</p>
+    </div>
+
+    <!-- Step 1: Tiêu chí -->
+    <div class="card">
+        <h2><i class="fas fa-filter"></i> Bước 1: Nhập tiêu chí tuyển dụng</h2>
+        <textarea id="criteria" class="textarea" placeholder="Ví dụ:
+
+Vị trí: Senior Java Developer
+
+Yêu cầu:
+- 5+ năm kinh nghiệm Java/Spring Boot
+- Thành thạo REST API, Microservices
+- Có kinh nghiệm lead team
+- Kỹ năng tiếng Anh tốt
+- Ưu tiên có kinh nghiệm AWS/Azure"></textarea>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="card">
+        <h2><i class="fas fa-upload"></i> Bước 2: Upload CV (PDF)</h2>
+        <input type="file" id="fileInput" accept=".pdf" multiple style="display: none;">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Click hoặc kéo thả file PDF vào đây</p>
+            <p style="font-size: 0.9rem; color: #999; margin-top: 0.5rem;">Có thể upload nhiều CV cùng lúc</p>
+        </div>
+        <div id="filesList" class="files-list"></div>
+    </div>
+
+    <!-- Step 3: Analyze -->
+    <div class="card" style="text-align: center;">
+        <button id="analyzeBtn" class="btn btn-primary" disabled>
+            <i class="fas fa-magic"></i> Phân tích với Grok AI
+        </button>
+    </div>
+
+    <!-- Results -->
+    <div id="resultsContainer"></div>
+</div>
+
+<script>
+    let uploadedFiles = [];
+    const fileInput = document.getElementById('fileInput');
+    const filesList = document.getElementById('filesList');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const criteria = document.getElementById('criteria');
+    const resultsContainer = document.getElementById('resultsContainer');
+
+    // Check button state
+    function updateButtonState() {
+        analyzeBtn.disabled = !criteria.value.trim() || uploadedFiles.length === 0;
+    }
+
+    criteria.addEventListener('input', updateButtonState);
+
+    // File upload
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(Array.from(e.target.files));
+    });
+
+    function handleFiles(files) {
+        files.forEach(file => {
+            if (!file.name.toLowerCase().endsWith('.pdf')) {
+                alert('Chỉ chấp nhận file PDF!');
+                return;
+            }
+
+            uploadedFiles.push({
+                id: Date.now() + Math.random(),
+                file: file,
+                name: file.name,
+                size: (file.size / 1024).toFixed(2) + ' KB'
+            });
+        });
+
+        renderFilesList();
+        updateButtonState();
+    }
+
+    function renderFilesList() {
+        if (uploadedFiles.length === 0) {
+            filesList.innerHTML = '';
+            return;
+        }
+
+        filesList.innerHTML = uploadedFiles.map(f => `
+                <div class="file-item">
+                    <div class="file-info">
+                        <i class="fas fa-file-pdf file-icon"></i>
+                        <div>
+                            <strong>${f.name}</strong>
+                            <div style="font-size: 0.9rem; color: #666;">${f.size}</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" onclick="removeFile('${f.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+    }
+
+    function removeFile(id) {
+        uploadedFiles = uploadedFiles.filter(f => f.id !== parseFloat(id));
+        renderFilesList();
+        updateButtonState();
+    }
+
+    // Analyze
+    analyzeBtn.addEventListener('click', async function() {
+        const criteriaText = criteria.value.trim();
+
+        if (!criteriaText || uploadedFiles.length === 0) {
+            alert('Vui lòng nhập tiêu chí và upload ít nhất 1 CV!');
+            return;
+        }
+
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = '<div class="spinner"></div> Đang phân tích...';
+
+        resultsContainer.innerHTML = '<div class="card loading"><div class="spinner"></div><p>Đang xử lý và phân tích CV với Grok AI...</p></div>';
+
+        try {
+            // Step 1: Upload files
+            const uploadPromises = uploadedFiles.map(f => uploadFile(f.file));
+            const uploadResults = await Promise.all(uploadPromises);
+            const fileIds = uploadResults.map(r => r.fileId);
+
+            console.log('Uploaded files:', fileIds);
+
+            // Step 2: Analyze
+            const response = await fetch('/hr/cv-test/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    criteria: criteriaText,
+                    fileIds: fileIds
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Phân tích thất bại');
+            }
+
+            const data = await response.json();
+            displayResults(data.results);
+
+        } catch (error) {
+            console.error('Error:', error);
+            resultsContainer.innerHTML = `
+                    <div class="card">
+                        <div class="alert alert-danger">
+                            <strong>Lỗi!</strong> ${error.message}
+                        </div>
+                    </div>
+                `;
+        } finally {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '<i class="fas fa-magic"></i> Phân tích với Grok AI';
+            updateButtonState();
+        }
+    });
+
+    async function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/hr/cv-test/api/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Upload failed: ${file.name}`);
+        }
+
+        return await response.json();
+    }
+
+    function displayResults(results) {
+        if (!results || results.length === 0) {
+            resultsContainer.innerHTML = `
+                    <div class="card">
+                        <div class="alert alert-danger">
+                            Không có kết quả phân tích
+                        </div>
+                    </div>
+                `;
+            return;
+        }
+
+        resultsContainer.innerHTML = `
+                <div class="card">
+                    <h2><i class="fas fa-chart-bar"></i> Kết quả phân tích (${results.length} ứng viên)</h2>
+                    <div class="results-grid">
+                        ${results.map(r => createResultCard(r)).join('')}
+                    </div>
+                </div>
+            `;
+    }
+
+    function createResultCard(result) {
+        const scoreClass = getScoreClass(result.score);
+
+        return `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="candidate-info">
+                            <h3>${result.name || 'N/A'}</h3>
+                            <p><i class="fas fa-envelope"></i> ${result.email || 'N/A'}</p>
+                            <p><i class="fas fa-phone"></i> ${result.phone || 'N/A'}</p>
+                        </div>
+                        <div class="score-circle ${scoreClass}">
+                            ${result.score}
+                        </div>
+                    </div>
+
+                    <div class="summary-box">
+                        <strong>Tóm tắt:</strong> ${result.summary || 'N/A'}
+                    </div>
+
+                    ${result.strengths && result.strengths.length > 0 ? `
+                    <div class="strengths">
+                        <h4><i class="fas fa-check-circle"></i> Điểm mạnh</h4>
+                        <ul>
+                            ${result.strengths.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+
+                    ${result.weaknesses && result.weaknesses.length > 0 ? `
+                    <div class="weaknesses">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Cần cải thiện</h4>
+                        <ul>
+                            ${result.weaknesses.map(w => `<li>${w}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+    }
+
+    function getScoreClass(score) {
+        if (score >= 90) return 'score-excellent';
+        if (score >= 75) return 'score-good';
+        if (score >= 60) return 'score-fair';
+        return 'score-poor';
+    }
+</script>
+</body>
+</html>

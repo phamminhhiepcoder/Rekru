@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="layout" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<th:block th:replace="layout/hr-layout :: layout">
+    <th:block th:fragment="pageContent">
+        <div class="pd-ltr-20 xs-pd-20-10">
+            <div class="min-height-200px">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="title">
+                                <h4>Tải Lên Hồ Sơ Ứng Viên</h4>
+                            </div>
+                            <nav aria-label="breadcrumb" role="navigation">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a th:href="@{/hr/dashboard}">Trang quản lý</a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        Tải Lên Hồ Sơ Ứng Viên
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Form -->
+                <div class="pd-20 card-box mb-30">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h4 class="text-blue h4">Tải lên hồ sơ</h4>
+                        </div>
+                    </div>
+                    <form th:action="@{/hr/post/candidate/save}" method="post" th:object="${dto}" class="form" enctype="multipart/form-data"
+                          accept-charset="UTF-8">
+
+                        <div th:if="${error}" class="text-danger">
+                            <p th:text="${error}"></p>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="fullName">Tên ứng viên</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="text" id="fullName" th:field="*{fullName}" class="form-control"/>
+                            </div>
+
+                            <label class="col-sm-12 col-md-2 col-form-label" for="phoneNumber">Số điện thoại</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="text" id="phoneNumber" th:field="*{phoneNumber}" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="email">Email</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="email" id="email" th:field="*{email}" class="form-control"
+                                />
+                            </div>
+
+                            <label class="col-sm-12 col-md-2 col-form-label" for="source">Nguồn ứng tuyển</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="text" id="source" th:field="*{source}" class="form-control"
+                                />
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="introducer">Tên người giới
+                                thiệu</label>
+                            <div class="col-sm-12 col-md-4">
+                                <input type="text" id="introducer" th:field="*{introducer}" class="form-control"
+                                />
+                            </div>
+
+                            <label class="col-sm-12 col-md-2 col-form-label" for="round">Vòng</label>
+                            <div class="col-sm-12 col-md-4">
+                                <select id="round" th:field="*{round}" class="custom-select col-12">
+                                    <option value="PRESCREEN" selected>Prescreen</option>
+                                    <option value="PHONE_INTERVIEW">Phone Interview</option>
+                                    <option value="HIRING_REVIEW">Hiring Review</option>
+                                    <option value="ASSESSMENT_TEST">Assessment Test</option>
+                                    <option value="FIRST_INTERVIEW">First Interview</option>
+                                    <option value="SECOND_INTERVIEW">Second Interview</option>
+                                    <option value="THIRD_INTERVIEW">Third Interview</option>
+                                    <option value="JOB_OFFER">Job Offer</option>
+                                    <option value="ONBOARDING">Onboarding</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="description">Ghi chú</label>
+                            <div class="col-sm-12 col-md-10">
+                                <textarea id="description" th:field="*{description}" class="form-control"
+                                          placeholder="Nhập mô tả"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-md-2 col-form-label" for="file">CV</label>
+                            <div class="col-sm-12 col-md-10">
+                                <input id="file" name="file" type="file" class="form-control"
+                                       placeholder="Tải lên CV"/>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <div class="col-sm-12 text-right">
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                                <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#confirmModal">Hủy</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</th:block>
+<script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<!-- Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Cảnh báo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Hồ sơ ứng viên chưa được lưu, bạn có chắc muốn hủy quá trình này?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button onclick="window.history.back()" class="btn btn-success">Có</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#description'))
+        .catch(error => console.error(error));
+</script>
+
+</html>

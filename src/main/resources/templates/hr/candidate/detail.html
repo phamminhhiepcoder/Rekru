@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="layout" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Dashboard</title>
+    <style>
+        .status-dot {
+        padding-left: 24px;
+        position: relative;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+
+    .status-dot::before {
+        content: "";
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        position: absolute;
+        left: 0;
+        top: 3px;
+    }
+
+    .status-processing::before {
+        background-color: #007bff; /* xanh dương */
+    }
+
+    .status-waiting::before {
+        background-color: #ffc107; /* vàng */
+    }
+
+    .status-canceled::before {
+        background-color: #dc3545; /* đỏ */
+    }
+
+    .status-completed::before {
+        background-color: #28a745; /* xanh lá */
+    }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout/hr-layout :: layout">
+    <th:block th:fragment="pageContent">
+        <div class="pd-ltr-20 xs-pd-20-10">
+            <div class="min-height-200px">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="title">
+                                <h4>Quản lý bài đăng tuyển dụng</h4>
+                            </div>
+                            <nav aria-label="breadcrumb" role="navigation">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a th:href="@{/hr/dashboard}">Trang quản lý</a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        Chi tiết bài đăng tuyển dụng
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pd-20 card-box mb-30" th:object="${postDto}">
+                    <h4 class="text-blue h4">#Bài đăng <span th:text="*{'BD-'+ id}"></span></h4>
+
+                    <!-- Row 1 -->
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <label><strong>Mã bài đăng</strong></label>
+                            <p class="form-control-plaintext" th:text="*{'BD-'+ id}">YC1234567</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Hiển thị</strong></label>
+                            <p class="form-control-plaintext"
+                               th:text="${postDto.showPost == 2 ? 'Chỉ bên ngoài' : (postDto.showPost == 1 ? 'Chỉ nội bộ' : 'Cả hai')}">
+                                Cả hai </p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Thời gian hiển thị</strong></label>
+                            <p class="form-control-plaintext">
+                                <span class="badge badge-info" th:text="${postDto.startDate}">01/10/2025</span> -
+                                <span class="badge badge-warning" th:text="${postDto.endDate}">31/10/2025</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <label><strong>Nhóm phụ trách</strong></label>
+                            <p class="form-control-plaintext" th:text="*{inChargePerson}">Junior BA</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Trạng thái</strong></label>
+                            <p class="form-control-plaintext font-weight-bold"
+                               th:classappend="${postDto.status == 1 ? 'text-success' : 'text-danger'}"
+                               th:text="${postDto.status == 1 ? 'Đang hoạt động' : 'Ngưng hoạt động'}">
+                                Đang hoạt động
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Số lượng hồ sơ</strong></label>
+                            <p class="form-control-plaintext">2</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="pd-20 card-box mb-30">
+                    <h4 class="text-blue h4 mb-3">Xem chi tiết Bài Đăng Tuyển Dụng</h4>
+
+                    <!-- Tabs header -->
+                    <ul class="nav nav-tabs customtab mb-4" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#info" role="tab">Thông tin chi tiết</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#candidates" role="tab">Danh sách ứng viên</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tabs content -->
+                    <div class="tab-content">
+                        <!-- Tab 1: Thông tin chi tiết -->
+                        <div class="tab-pane fade show active" id="info" role="tabpanel">
+                            <div class="pd-20 card-box sec-1" th:object="${postDto}">
+
+                                <!-- Row 1 -->
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <label><strong>Mã bài đăng</strong></label>
+                                        <p class="form-control-plaintext" th:text="*{'BD-' + id}">BD123456</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label><strong>Vị trí</strong></label>
+                                        <p class="form-control-plaintext" th:text="*{position}">Junior BA</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label><strong>Bộ phận</strong></label>
+                                        <p class="form-control-plaintext" th:text="*{department}">T&A</p>
+                                    </div>
+                                </div>
+
+                                <!-- Row 2 -->
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <label><strong>Địa điểm</strong></label>
+                                        <p class="form-control-plaintext" th:text="*{location}">Hà Nội</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label><strong>Nhóm phụ trách</strong></label>
+                                        <p class="form-control-plaintext" th:text="*{inChargePerson}">Phòng Tuyển
+                                            Dụng</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label><strong>Trạng thái</strong></label>
+                                        <p class="form-control-plaintext font-weight-bold"
+                                           th:classappend="*{status == 1 ? 'text-success' : 'text-danger'}"
+                                           th:text="*{status == 1 ? 'Đang hoạt động' : 'Ngưng hoạt động'}">Đang hoạt
+                                            động</p>
+                                    </div>
+                                </div>
+
+                                <!-- Row 3 -->
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <label><strong>Hiển thị</strong></label>
+                                        <p class="form-control-plaintext"
+                                           th:text="${showPost == 2 ? 'Chỉ bên ngoài' : (showPost == 1 ? 'Chỉ nội bộ' : 'Cả hai')}">
+                                            Cả hai</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label><strong>Thời gian hiển thị</strong></label>
+                                        <p class="form-control-plaintext">
+                                            <span class="badge badge-info" th:text="*{startDate}">01/10/2025</span>
+                                            -
+                                            <span class="badge badge-warning" th:text="*{endDate}">31/10/2025</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="form-group">
+                                    <label><strong>Mô tả công việc</strong></label>
+                                    <div class="form-control-plaintext" th:utext="*{jobDescription}">Mô tả chi tiết...
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label><strong>Tiêu chuẩn</strong></label>
+                                    <div class="form-control-plaintext" th:utext="*{standard}">Tiêu chuẩn ứng viên...
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label><strong>Phúc lợi</strong></label>
+                                    <div class="form-control-plaintext" th:utext="*{welfare}">BHYT, BHXH, Thưởng lễ
+                                        tết...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Danh sách ứng viên -->
+                        <div class="tab-pane fade" id="candidates" role="tabpanel">
+                            <div class="pd-20 card-box">
+                                <h5 class="text-primary">Danh sách ứng viên</h5>
+                                <div class="pb-20">
+
+                                    <table class="data-table table stripe hover nowrap">
+                                        <thead>
+                                        <tr>
+                                            <th class="table-plus datatable-nosort">Mã ứng viên</th>
+                                            <th>Tên ứng viên</th>
+                                            <th>Điện thoại</th>
+                                            <th>Email</th>
+                                            <th>CV</th>
+                                            <th>Nguồn ứng tuyển</th>
+                                            <th>Vòng</th>
+                                            <th>Trạng thái</th>
+                                            <th>Đánh giá CV</th>
+                                            <th>Lịch phỏng vấn gần nhất</th>
+                                            <th>Cập nhật lần cuối</th>
+                                            <th class="datatable-nosort">Hành động</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="c : ${candidates}">
+                                            <td class="table-plus" th:text="${'YC' + req.id}"></td>
+
+                                            <td th:text="${c.requesterName}"></td>
+                                            <td th:text="${c.department}"></td>
+                                            <td th:text="${c.position}"></td>
+                                            <td th:text="${c.quantity}"></td>
+                                            <td th:text="${c.startDate != null ? req.startDate : 'Chưa có'}"></td>
+                                            <td th:text="${c.endDate != null ? req.endDate : 'Chưa có'}"></td>
+
+                                            <td>
+    <span class="status-dot"
+          th:classappend="| status-${req.requestStatus?.toLowerCase()}|"
+          th:text="${req.requestStatus}">Trạng thái</span>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="dropdown">
+                                                    <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
+                                                       href="#" role="button" data-toggle="dropdown">
+                                                        <i class="dw dw-more"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                                                        <a class="dropdown-item"
+                                                           th:href="@{/dep/post/candidate/detail/{id}(id=${c.id})}">
+                                                            <i class="dw dw-eye"></i> Xem
+                                                        </a>
+                                                        <a class="dropdown-item"
+                                                           th:href="@{/dep/post/candidate/edit/{id}(id=${c.id})}">
+                                                            <i class="dw dw-edit2"></i> Cập nhật
+                                                        </a>
+                                                    </div>
+
+                                                    <a class="dropdown-item"
+                                                       th:href="@{/dep/post/candidate/delete/{id}(id=${c.id})}">
+                                                        <i class="dw dw-delete"></i>
+                                                    </a>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-box mb-30">
+                    <div class="pd-20">
+                      <h4 class="text-blue h4">Sàng lọc CV (Grok)</h4>
+                  
+                      <div class="form-group">
+                        <label for="criteria">Tiêu chí tuyển dụng</label>
+                        <textarea id="criteria" class="form-control" rows="3"
+                          placeholder="VD: Java, Spring Boot, REST API, 2+ years, tiếng Anh giao tiếp"></textarea>
+                      </div>
+                  
+                      <button class="btn btn-primary" id="btnAnalyze">Sàng lọc CV</button>
+                      <span id="analyzeStatus" style="margin-left:10px;"></span>
+                  
+                      <pre id="analyzeResult" style="margin-top:12px; white-space:pre-wrap;"></pre>
+                    </div>
+                  </div>
+                  
+                  <script th:inline="javascript">
+                  /*<![CDATA[*/
+                    const candidateId = /*[[${dto.id}]]*/ 0;
+                  
+                    document.getElementById('btnAnalyze').addEventListener('click', async () => {
+                      const criteria = document.getElementById('criteria').value.trim() || '';
+                      const statusEl = document.getElementById('analyzeStatus');
+                      const out = document.getElementById('analyzeResult');
+                  
+                      statusEl.textContent = 'Đang phân tích...';
+                      out.textContent = '';
+                  
+                      try {
+                        const params = new URLSearchParams();
+                        if (criteria) params.append('criteria', criteria);
+                  
+                        const res = await fetch(`/hr/cv/analyze/${candidateId}`, {
+                          method: 'POST',
+                          headers: {'Content-Type':'application/x-www-form-urlencoded'},
+                          body: params.toString()
+                        });
+                  
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || 'Analyze failed');
+                  
+                        statusEl.textContent = 'Hoàn tất ✓';
+                        out.textContent = JSON.stringify(data, null, 2);
+                      } catch (e) {
+                        statusEl.textContent = 'Lỗi';
+                        out.textContent = 'Lỗi: ' + e.message;
+                      }
+                    });
+                  /*]]>*/
+                  </script>
+                  
+
+                <div class="form-group row">
+                    <div class="col-sm-12 text-right">
+                        <a th:href="@{/hr/request}" class="btn btn-secondary">Quay lại</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</th:block>
+</body>
+</html>

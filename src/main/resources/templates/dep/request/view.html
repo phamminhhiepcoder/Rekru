@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="layout" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8"/>
+    <title>Dashboard</title>
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 50px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(14px);
+        }
+
+                .table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .table th, .table td {
+            word-wrap: break-word;
+            white-space: nowrap;
+        }
+        .status-dot {
+    padding-left: 24px;
+    position: relative;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status-dot::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 3px;
+}
+
+/* Màu theo trạng thái */
+.status-processing::before {
+    background-color: #007bff; /* xanh dương */
+}
+
+.status-waiting::before {
+    background-color: #ffc107; /* vàng */
+}
+
+.status-canceled::before {
+    background-color: #dc3545; /* đỏ */
+}
+
+.status-completed::before {
+    background-color: #28a745; /* xanh lá */
+}
+
+
+    </style>
+</head>
+<body>
+
+<th:block th:replace="layout/dep-layout :: layout">
+    <th:block th:fragment="pageContent">
+        <div class="pd-ltr-20 xs-pd-20-10">
+            <div class="min-height-200px">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="title">
+                                <h4>Quản lý yêu cầu tuyển dụng</h4>
+                            </div>
+                            <nav aria-label="breadcrumb" role="navigation">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a th:href="@{/dep/dashboard}">Quản lý</a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        Quản lý yêu cầu tuyển dụng
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div th:if="${param.add}" class="alert alert-success" role="alert">
+                    Thêm thành công!
+                </div>
+
+                <div th:if="${param.update}" class="alert alert-success" role="alert">
+                    Cập nhật thành công!
+                </div>
+
+                <div th:if="${param.updateStatus}" class="alert alert-success" role="alert">
+                    Cập nhật trạng thái thành công!
+                </div>
+
+                <!-- Simple Datatable start -->
+                <div class="card-box mb-30">
+                    <div class="pd-20">
+                        <h4 class="text-blue h4">Quản lý yêu cầu tuyển dụng</h4>
+                    </div>
+                    <div class="pb-20">
+
+                        <table class="data-table table stripe hover nowrap">
+                            <thead>
+                            <tr>
+                                <th class="table-plus datatable-nosort">Mã yêu cầu</th>
+                                <th>Người yêu cầu</th>
+                                <th>Bộ phận</th>
+                                <th>Vị trí</th>
+                                <th>Số lượng</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày hoàn thành</th>
+                                <th>Trạng thái</th>
+                                <th class="datatable-nosort">Hành động</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="req : ${requests}">
+                                <td class="table-plus" th:text="${'YC' + req.id}"></td>
+
+                                <td th:text="${req.requesterName}"></td>
+                                <td th:text="${req.department}"></td>
+                                <td th:text="${req.position}"></td>
+                                <td th:text="${req.quantity}"></td>
+                                <td th:text="${req.startDate != null ? req.startDate : 'Chưa có'}"></td>
+                                <td th:text="${req.endDate != null ? req.endDate : 'Chưa có'}"></td>
+
+                                <td>
+    <span class="status-dot"
+          th:classappend="| status-${req.requestStatus?.toLowerCase()}|"
+          th:text="${req.requestStatus}">Trạng thái</span>
+                                </td>
+
+
+                                <td>
+                                    <div class="dropdown">
+                                        <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
+                                           href="#" role="button" data-toggle="dropdown">
+                                            <i class="dw dw-more"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                                            <a class="dropdown-item"
+                                               th:href="@{/dep/request/detail/{id}(id=${req.id})}">
+                                                <i class="dw dw-eye"></i> Xem
+                                            </a>
+                                            <a class="dropdown-item"
+                                               th:href="@{/dep/request/edit/{id}(id=${req.id})}">
+                                                <i class="dw dw-edit2"></i> Cập nhật
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </th:block>
+</th:block>
+
+
+<script>
+    $(document).ready(function() {
+    if ($.fn.dataTable.isDataTable('.data-table')) {
+        $('.data-table').DataTable().destroy();
+    }
+
+    $('.data-table').DataTable({
+        responsive: true,
+        autoWidth: false,
+    });
+});
+
+</script>
+</body>
+</html>

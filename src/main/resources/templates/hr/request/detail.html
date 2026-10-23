@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="layout" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Dashboard</title>
+    <style>
+        .status-dot {
+        padding-left: 24px;
+        position: relative;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+
+    .status-dot::before {
+        content: "";
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        position: absolute;
+        left: 0;
+        top: 3px;
+    }
+
+    .status-processing::before {
+        background-color: #007bff; /* xanh dương */
+    }
+
+    .status-waiting::before {
+        background-color: #ffc107; /* vàng */
+    }
+
+    .status-canceled::before {
+        background-color: #dc3545; /* đỏ */
+    }
+
+    .status-completed::before {
+        background-color: #28a745; /* xanh lá */
+    }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout/hr-layout :: layout">
+    <th:block th:fragment="pageContent">
+        <div class="pd-ltr-20 xs-pd-20-10">
+            <div class="min-height-200px">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="title">
+                                <h4>Quản lý yêu cầu tuyển dụng</h4>
+                            </div>
+                            <nav aria-label="breadcrumb" role="navigation">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a th:href="@{/hr/dashboard}">Trang quản lý</a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        Chi tiết yêu cầu tuyển dụng
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pd-20 card-box mb-30" th:object="${requestDto}">
+                    <h4 class="text-blue h4">THÔNG TIN CHI TIẾT</h4>
+
+                    <!-- Row 1 -->
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <label><strong>Mã yêu cầu</strong></label>
+                            <p class="form-control-plaintext" th:text="*{'YC'+ id}">YC1234567</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Mục tiêu</strong></label>
+                            <p class="form-control-plaintext"
+                               th:text="*{target == 'within-budget' ? 'Trong ngân sách' : 'Ngoài ngân sách'}">Ngoài ngân
+                                sách</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Bộ phận</strong></label>
+                            <p class="form-control-plaintext" th:text="*{department}">T&A</p>
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <label><strong>Vị trí</strong></label>
+                            <p class="form-control-plaintext" th:text="*{position}">Junior BA</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Người phụ trách</strong></label>
+                            <p class="form-control-plaintext" th:text="*{requesterName}">Nguyen Van A</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Địa điểm</strong></label>
+                            <p class="form-control-plaintext" th:text="*{location}">12 Duy Tân</p>
+                        </div>
+                    </div>
+
+                    <!-- Row 3 -->
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <label><strong>Số lượng tuyển dụng</strong></label>
+                            <p class="form-control-plaintext" th:text="*{quantity}">2</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Loại tuyển dụng</strong></label>
+                            <p class="form-control-plaintext"
+                               th:text="*{reason == 'no-deadline' ? 'Không thời hạn' : 'Có thời hạn'}">Có thời hạn</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label><strong>Thời gian làm việc</strong></label>
+                            <p class="form-control-plaintext" th:text="*{months + ' tháng'}">12 tháng</p>
+                        </div>
+                    </div>
+
+                    <!-- Row 4 -->
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <label><strong>Loại yêu cầu</strong></label>
+                            <p class="form-control-plaintext"
+                               th:text="*{requestType == 'new' ? 'Tuyển mới' : 'Thay thế'}">Thay thế</p>
+                        </div>
+                        <div class="col-md-8">
+                            <label><strong>Nhân viên thay thế</strong></label>
+                            <p class="form-control-plaintext">Nguyen Van A, Nguyen Van B</p>
+                        </div>
+                    </div>
+
+                    <!-- Row 5 -->
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <label><strong>Ngày bắt đầu tuyển dụng</strong></label>
+                            <p class="form-control-plaintext" th:text="*{startDate}">30/08/2025</p>
+                        </div>
+                        <div class="col-md-8">
+                            <label><strong>Ngày hoàn thành tuyển dụng</strong></label>
+                            <p class="form-control-plaintext" th:text="*{endDate}">30/11/2025</p>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <label><strong>Trạng thái</strong></label><br/>
+                            <span class="status-dot"
+                                  th:classappend="| status-${requestDto.requestStatus?.toLowerCase()}|"
+                                  th:text="${requestDto.requestStatus}">Waiting</span>
+                        </div>
+                    </div>
+
+                    <!-- Explanation -->
+                    <div class="form-group">
+                        <label><strong>Giải trình</strong></label>
+                        <div class="form-control-plaintext" th:utext="*{explanation}">Lorem Ipsum...</div>
+                    </div>
+
+                    <!-- Job Description -->
+                    <div class="form-group">
+                        <label><strong>Mô tả công việc</strong></label>
+                        <div class="form-control-plaintext" th:utext="*{jobDescription}">Lorem Ipsum...</div>
+                    </div>
+
+                    <!-- Standard -->
+                    <div class="form-group">
+                        <label><strong>Tiêu chuẩn</strong></label>
+                        <div class="form-control-plaintext" th:utext="*{standard}">Lorem Ipsum...</div>
+                    </div>
+
+                    <!-- Attachment -->
+                    <div class="form-group">
+                        <label><strong>Giấy xác nhận</strong></label>
+                        <div>
+                            <a th:href="@{${requestDto.confirmation}}" target="_blank"
+                               class="btn btn-info">Xem</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pd-20 card-box mb-30">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-blue h4 mb-0">DANH SÁCH BÀI ĐĂNG</h4>
+
+                        <a th:href="@{/hr/post/add(reqId=${requestDto.id})}" class="btn btn-success">
+                            <i class="bi bi-plus"></i> Tạo bài đăng mới
+                        </a>
+                    </div>
+
+                    <div th:each="post, iterStat : ${posts}" class="bg-light rounded mb-4 p-3">
+                        <div class="post-card border rounded p-3 mb-3">
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <label><strong>Mã bài đăng</strong></label>
+                                    <p class="form-control-plaintext" th:text="'BD-' + ${post.id}">BD123456</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label><strong>Hiển thị</strong></label>
+                                    <p class="form-control-plaintext"
+                                       th:text="${post.showPost == 2 ? 'Chỉ bên ngoài' : (post.showPost == 1 ? 'Chỉ nội bộ' : 'Cả hai')}">
+                                        Cả hai</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label><strong>Thời gian hiển thị</strong></label>
+                                    <p class="form-control-plaintext">
+                                        <span class="badge badge-info" th:text="${post.startDate}">01/10/2025</span> -
+                                        <span class="badge badge-warning" th:text="${post.endDate}">31/10/2025</span>
+
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Row 2 -->
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <label><strong>Nhóm phụ trách</strong></label>
+                                    <p class="form-control-plaintext">
+                                        <span th:text="${post.inChargePerson}">HR Team</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label><strong>Trạng thái</strong></label>
+                                    <p class="form-control-plaintext font-weight-bold"
+                                       th:classappend="${post.status == 1 ? 'text-success' : 'text-danger'}"
+                                       th:text="${post.status == 1 ? 'Đang hoạt động' : 'Ngưng hoạt động'}">
+                                        Đang hoạt động
+                                    </p>
+
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label><strong>Số lượng hồ sơ</strong></label>
+                                    <p class="form-control-plaintext">2</p>
+                                </div>
+                            </div>
+                            <div>
+                                <a th:href="@{'/hr/post/detail/' + ${post.id}}" class="btn btn-outline-primary">Chi tiết
+                                    bài
+                                    đăng</a>
+
+                                <a th:href="@{'/hr/post/edit/' + ${post.id}}" class="btn btn-warning">Cập nhật</a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-12 text-right">
+                        <a th:href="@{/hr/request}" class="btn btn-secondary">Quay lại</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</th:block>
+</body>
+</html>
